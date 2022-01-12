@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan("sopra.formation.dao.jpa") // Indiquer dans quel paquetage scanner pour trouver des annotations
 @PropertySource("classpath:db.properties")
+@EnableJpaRepositories(basePackages = "sopra.formation.dao", repositoryImplementationPostfix = "Impl")
 @EnableTransactionManagement // On active les annotations @Transactional
 public class ApplicationConfig {
 
