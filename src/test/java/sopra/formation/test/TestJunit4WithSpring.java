@@ -2,20 +2,33 @@ package sopra.formation.test;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sopra.formation.Application;
+import sopra.formation.config.ApplicationConfig;
 import sopra.formation.dao.IFiliereDao;
 import sopra.formation.model.Dispositif;
 import sopra.formation.model.Filiere;
 
-public class TestJunit4 {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = ApplicationConfig.class)
+//@ContextConfiguration(locations = "classpath:application-context.xml")
+public class TestJunit4WithSpring {
+
+	@Autowired
+	private IFiliereDao filiereDao;
+	
+	@Autowired
+	private IUtilisateur utilisateurDao;
 
 	@Test
 	public void filiere() {
-		IFiliereDao filiereDao = Application.getInstance().getFiliereDao();
 
 		int nbStartFiliere = filiereDao.findAll().size();
 
@@ -33,7 +46,7 @@ public class TestJunit4 {
 
 		filiereBis = filiereDao.save(filiereBis);
 
-		filiere = filiereDao.findById(filiere.getId());
+		filiere = filiereDao.findById(filiere.getId()).get();
 
 		Assert.assertEquals(0, filiere.getVersion());
 		Assert.assertEquals(LocalDate.of(2021, Month.NOVEMBER, 29), filiere.getDateDebut());
@@ -46,7 +59,7 @@ public class TestJunit4 {
 
 		filiere = filiereDao.save(filiere);
 
-		filiere = filiereDao.findById(filiere.getId());
+		filiere = filiereDao.findById(filiere.getId()).get();
 
 		Assert.assertEquals(1, filiere.getVersion());
 		Assert.assertEquals(LocalDate.of(2021, Month.DECEMBER, 6), filiere.getDateDebut());
@@ -59,17 +72,19 @@ public class TestJunit4 {
 
 		filiereDao.deleteById(filiere.getId());
 
-		filiere = filiereDao.findById(filiere.getId());
+		Optional<Filiere> optFiliere = filiereDao.findById(filiere.getId());
 
-		if (filiere != null) {
-			Assert.fail("Erreur Suppression filière");
+		if (optFiliere.isPresent()) {
+			Assert.fail("Erreur Suppression Filiere");
 		}
 
+
 		filiereDao.delete(filiereBis);
+		
 
-		filiereBis = filiereDao.findById(filiereBis.getId());
+		optFiliere = filiereDao.findById(filiereBis.getId());
 
-		Assert.assertNull(filiereBis);
+		Assert.assertTrue(optFiliere.isEmpty());
 
 	}
 
